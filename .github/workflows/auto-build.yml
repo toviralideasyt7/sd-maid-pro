@@ -20,12 +20,12 @@ jobs:
 
       - name: Generate Release Keystore
         run: |
-          # Create directory for signing config
-          mkdir -p ~/.config/projects/eu.darken.sdmse
+          # Create keystore directory
+          mkdir -p $HOME/keystore
           
           # Generate keystore file
           keytool -genkey -v \
-            -keystore ~/.config/projects/eu.darken.sdmse/release.keystore \
+            -keystore $HOME/keystore/release.keystore \
             -alias sdmaid \
             -keyalg RSA \
             -keysize 2048 \
@@ -33,17 +33,14 @@ jobs:
             -storepass sdmaid123 \
             -keypass sdmaid123 \
             -dname "CN=SD Maid Pro, OU=Development, O=SD Maid, L=Unknown, ST=Unknown, C=US"
-          
-          # Create signing properties file (this is what the build script reads)
-          cat > ~/.config/projects/eu.darken.sdmse/signing-foss.properties << 'EOF'
-          storePath=/home/runner/.config/projects/eu.darken.sdmse/release.keystore
-          storePassword=sdmaid123
-          keyAlias=sdmaid
-          keyPassword=sdmaid123
-          EOF
 
       - name: Assemble Release APK
         run: ./gradlew :app:assembleFossRelease
+        env:
+          STORE_PATH: $HOME/keystore/release.keystore
+          STORE_PASSWORD: sdmaid123
+          KEY_ALIAS: sdmaid
+          KEY_PASSWORD: sdmaid123
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4.6.2
