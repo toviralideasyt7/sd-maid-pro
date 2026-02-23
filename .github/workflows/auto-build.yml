@@ -18,13 +18,13 @@ jobs:
       - name: Setup project and build environment
         uses: ./.github/actions/common-setup
 
-      - name: Assemble Release APK
-        run: ./gradlew :app:assembleFossRelease
+      - name: Assemble Debug APK (no signing required)
+        run: ./gradlew :app:assembleFossDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: sdmaid-se-foss-release
+          name: sdmaid-se-foss-debug
           path: app/build/outputs/apk/foss/**/*.apk
           if-no-files-found: error
           retention-days: 30
