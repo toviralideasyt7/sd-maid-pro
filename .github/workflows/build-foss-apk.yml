@@ -1,0 +1,36 @@
+name: Build FOSS APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: Build variant to assemble
+        required: true
+        type: choice
+        options:
+          - Debug
+          - Beta
+          - Release
+        default: Debug
+
+jobs:
+  build-foss-apk:
+    name: Assemble FOSS APK
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Setup project and build environment
+        uses: ./.github/actions/common-setup
+
+      - name: Assemble APK
+        run: ./gradlew :app:assembleFoss${{ github.event.inputs.build_type || 'Debug' }}
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: foss-apk-${{ github.event.inputs.build_type || 'Debug' }}
+          path: app/build/outputs/apk/foss/**/*.apk
+          if-no-files-found: error
+          retention-days: 14

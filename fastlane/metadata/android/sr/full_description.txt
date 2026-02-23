@@ -1,0 +1,40 @@
+<i>SD Maid 2/SE</i> је верни чистач вашег Андроида, да га држи чистим и уредним.
+
+Нико није савршен, па ни Андроид.
+* Апликације које сте већ уклонили остављају понешто за собом.
+* Zapisnici, izvještaji o greškama i druge datoteke koje ne želite stalno se kreiraju.
+* Tvoje skladište prikuplja datoteke i fascikle koje ne prepoznaješ.
+* Duplirane fotografije u vašoj galeriji.
+
+Nema potrebe nastavljati… Neka vam SD Maid 2/SE pomogne!
+
+SD Maid 2/SE je aplikacija i upravitelj datoteka koji se specijalizira u znanju koje aplikacije su kreirale određene datoteke na vašoj uređaju. SD Maid 2/SE pretražuje vašu uređaj i uspoređuje datoteke s instaliranim aplikacijama kako bi vam ponudio mogućnosti za sigurno oslobađanje prostora.
+
+✨ Očistite nakon deinstaliranja aplikacija
+Ako aplikacije kreiraju datoteke izvan svojih odeljenih fascikli, datoteke mogu ostati čak i nakon deinstalacije aplikacija. Alat "CorpseFinder" pronalazi ostatke aplikacija, govori ti kojem su aplikaciji pripadali i pomaže ti da ih obrišeš.
+
+🔍 Pametno pretražite vašu uređaj
+Filtrira prazne fascikle, privremene datoteke, već instalirane aplikacije i još mnogo toga. Možete čak kreirati i svoje vlastite kriterije pretraživanja. Alat "SystemCleaner" omogućava vam automatsko pretraživanje vaše uređaja i brisanje datoteka prema različitim kriterijima.
+
+🧹 Brišite nepotrebne datoteke i skrivene privremene memorije
+Sličice, koševi, mrežne predmemorije i više: Ako aplikacije ne čiste nakon sebe, tada će to učiniti ova aplikacija. Alat "AppCleaner" pronalazi aplikacije s nepotrebnim datotekama.
+
+📦 Upravljajte svim vašim aplikacijama
+Dobijte sveobuhvatan popis svih aplikacija instaliranih na vašoj uređaju. Omogućeno, onemogućeno, korisnikova ili sistemska aplikacija: nikoja aplikacija se ne može sakriti od vas. Alat "AppControl" je upravitelj aplikacija koji vam omogućava pretraživanje, sortiranje i kontrolu vaših aplikacija.
+
+📊 Šta koristi sav tvoj prostor
+Upravljanje skladištem može biti komplikovano sa aplikacijama, medijima, sistemom i ostalim datotekama na memoriji telefona, SD kartama i USB uređajima. "StorageAnalyzer" je upravitelj datoteka koji prikazuje kako se prostor koristi na tvojoj uređaju, čineći upravljanje skladištem jednostavnijim.
+
+📷 Pronađi duplirane podatke
+Duplirani preuzimanja, fotografije poslane preko društvenih mreža ili samo slične slike iste scene: Tokom vremena kopije mogu da se nakupljaju. Alat "Deduplicator" pronalazi datoteke koje su potpuno iste ili slične i pomaže ti da obrišeš dodatne kopije.
+
+Ova aplikacija nema oglasa. Neke funkcije zahtijevaju plaćenu nadogradnju.
+
+SD Maid 2/SE je nasljednica aplikacije SD Maid 1/Legacy.
+Optimizirana za novije Android verzije i fokusirana na čišćenje.
+
+Ova aplikacija ima opcionalne funkcije koje koriste AccessibilityService API za automatizaciju zamorne radnje.
+Koristeći AccessibilityService API, ova aplikacija može kliknuti dugmići umesto tebe da izvrši operacije na više aplikacija, npr. brisanje privremenih datoteka.
+Ova aplikacija ne koristi AccessibilityService API za prikupljanje informacija.
+
+SD Maid 2/SE je aplikacija za upravljanje datotekama i čišćenje.

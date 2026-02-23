@@ -1,0 +1,30 @@
+name: Auto Build APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build FOSS APK
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+
+      - name: Setup project and build environment
+        uses: ./.github/actions/common-setup
+
+      - name: Assemble Release APK
+        run: ./gradlew :app:assembleFossRelease
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: sdmaid-se-foss-release
+          path: app/build/outputs/apk/foss/**/*.apk
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,23 @@
+.idea
+/.idea/**/*
+!/.idea/codeStyles/
+!/.idea/codeStyles/**/*
+*.iml
+.gradle
+build/
+/local.properties
+.local/*
+*.jks
+/fastlane/report.xml
+/fastlane/Appfile
+/captures
+.externalNativeBuild
+.cxx
+.DS_Store
+.kotlin/sessions
+.kotlin/errors
+
+# Claude Code
+.claude/settings.local.json
+.claude/tmp/
+/fastlane/README.md
