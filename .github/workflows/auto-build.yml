@@ -18,13 +18,37 @@ jobs:
       - name: Setup project and build environment
         uses: ./.github/actions/common-setup
 
-      - name: Assemble Debug APK (no signing required)
-        run: ./gradlew :app:assembleFossDebug
+      - name: Generate Release Keystore
+        run: |
+          # Create directory for signing config
+          mkdir -p ~/.config/projects/eu.darken.sdmse
+          
+          # Generate keystore file
+          keytool -genkey -v \
+            -keystore ~/.config/projects/eu.darken.sdmse/release.keystore \
+            -alias sdmaid \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass sdmaid123 \
+            -keypass sdmaid123 \
+            -dname "CN=SD Maid Pro, OU=Development, O=SD Maid, L=Unknown, ST=Unknown, C=US"
+          
+          # Create signing properties file (this is what the build script reads)
+          cat > ~/.config/projects/eu.darken.sdmse/signing-foss.properties << 'EOF'
+          storePath=/home/runner/.config/projects/eu.darken.sdmse/release.keystore
+          storePassword=sdmaid123
+          keyAlias=sdmaid
+          keyPassword=sdmaid123
+          EOF
+
+      - name: Assemble Release APK
+        run: ./gradlew :app:assembleFossRelease
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: sdmaid-se-foss-debug
+          name: sdmaid-se-foss-release
           path: app/build/outputs/apk/foss/**/*.apk
           if-no-files-found: error
           retention-days: 30
