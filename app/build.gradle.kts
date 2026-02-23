@@ -39,16 +39,18 @@ android {
 
     signingConfigs {
         val basePath = File(System.getProperty("user.home"), ".config/projects/${projectConfig.packageName}")
-        val hasEnvCredentials = System.getenv("STORE_PATH")?.let { File(it).exists() } == true
+        val hasEnvCredentials = !System.getenv("STORE_PATH").isNullOrBlank()
+        val hasFossProperties = File(basePath, "signing-foss.properties").canRead()
+        val hasGplayProperties = File(basePath, "signing-gplay-upload.properties").canRead()
         create("releaseFoss") {
-            if (hasEnvCredentials || basePath.exists()) {
+            if (hasEnvCredentials || hasFossProperties) {
                 setupCredentials(File(basePath, "signing-foss.properties"))
             } else {
                 initWith(signingConfigs["debug"])
             }
         }
         create("releaseGplay") {
-            if (hasEnvCredentials || basePath.exists()) {
+            if (hasEnvCredentials || hasGplayProperties) {
                 setupCredentials(File(basePath, "signing-gplay-upload.properties"))
             } else {
                 initWith(signingConfigs["debug"])

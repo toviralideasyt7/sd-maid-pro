@@ -33,11 +33,11 @@ jobs:
             -storepass sdmaid123 \
             -keypass sdmaid123 \
             -dname "CN=SD Maid Pro, OU=Development, O=SD Maid, L=Unknown, ST=Unknown, C=US"
+          echo "STORE_PATH=$HOME/keystore/release.keystore" >> $GITHUB_ENV
 
       - name: Assemble Release APK
         run: ./gradlew :app:assembleFossRelease
         env:
-          STORE_PATH: $HOME/keystore/release.keystore
           STORE_PASSWORD: sdmaid123
           KEY_ALIAS: sdmaid
           KEY_PASSWORD: sdmaid123

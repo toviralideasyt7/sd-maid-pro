@@ -13,6 +13,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 import java.util.Properties
 
+private fun resolveStorePath(rawPath: String): File {
+    val home = System.getProperty("user.home")
+    val normalized = rawPath
+        .replace("\${HOME}", home)
+        .replace("\$HOME", home)
+        .let { if (it == "~" || it.startsWith("~/")) it.replaceFirst("~", home) else it }
+    return File(normalized)
+}
+
 fun LibraryExtension.setupLibraryDefaults(projectConfig: ProjectConfig) {
     if (projectConfig.compileSdkPreview != null) {
         compileSdkPreview = projectConfig.compileSdkPreview
@@ -75,7 +84,7 @@ fun com.android.build.api.dsl.SigningConfig.setupCredentials(
     signingPropsPath: File? = null
 ) {
 
-    val keyStoreFromEnv = System.getenv("STORE_PATH")?.let { File(it) }
+    val keyStoreFromEnv = System.getenv("STORE_PATH")?.let { resolveStorePath(it) }
 
     if (keyStoreFromEnv?.exists() == true) {
         println("Using signing data from environment variables.")
