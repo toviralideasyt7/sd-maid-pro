@@ -61,6 +61,8 @@ class ScheduleStorageTest : BaseTest() {
                         "corpsefinderEnabled": false,
                         "systemcleanerEnabled": false,
                         "appcleanerEnabled": false,
+                        "killAppsEnabled": false,
+                        "cacheTrimEnabled": false,
                         "commandsAfterSchedule": []
                     }
                 ]
@@ -176,6 +178,8 @@ class ScheduleStorageTest : BaseTest() {
             useCorpseFinder = true,
             useSystemCleaner = true,
             useAppCleaner = true,
+            useKillApps = true,
+            useCacheTrim = true,
             commandsAfterSchedule = listOf("reboot"),
             executedAt = Instant.parse("2024-01-14T21:30:00Z"),
         )
@@ -197,11 +201,59 @@ class ScheduleStorageTest : BaseTest() {
                         "corpsefinderEnabled": true,
                         "systemcleanerEnabled": true,
                         "appcleanerEnabled": true,
+                        "killAppsEnabled": true,
+                        "cacheTrimEnabled": true,
                         "commandsAfterSchedule": ["reboot"],
                         "executedAt": "2024-01-14T21:30:00Z"
                     }
                 ]
             """.toComparableJson()
         }
+    }
+
+    @Test
+    fun `deserialization - legacy data without maintenance fields`() = runTest {
+        val dir = File(testDir, "scheduler/schedules").apply { mkdirs() }
+        File(dir, "schedules-v1.json").writeText(
+            """
+                [
+                    {
+                        "id": "legacy-id",
+                        "createdAt": "2024-01-15T10:00:00Z",
+                        "scheduledAt": "2024-01-15T12:00:00Z",
+                        "hour": 22,
+                        "minute": 30,
+                        "label": "Legacy Cleanup",
+                        "repeatInterval": "PT24H",
+                        "userZone": "Europe/Berlin",
+                        "corpsefinderEnabled": true,
+                        "systemcleanerEnabled": true,
+                        "appcleanerEnabled": true,
+                        "commandsAfterSchedule": ["reboot"],
+                        "executedAt": "2024-01-14T21:30:00Z"
+                    }
+                ]
+            """.trimIndent()
+        )
+
+        create().load() shouldBe setOf(
+            Schedule(
+                id = "legacy-id",
+                createdAt = Instant.parse("2024-01-15T10:00:00Z"),
+                scheduledAt = Instant.parse("2024-01-15T12:00:00Z"),
+                hour = 22,
+                minute = 30,
+                label = "Legacy Cleanup",
+                repeatInterval = Duration.ofDays(1),
+                userZone = "Europe/Berlin",
+                useCorpseFinder = true,
+                useSystemCleaner = true,
+                useAppCleaner = true,
+                useKillApps = false,
+                useCacheTrim = false,
+                commandsAfterSchedule = listOf("reboot"),
+                executedAt = Instant.parse("2024-01-14T21:30:00Z"),
+            )
+        )
     }
 }
