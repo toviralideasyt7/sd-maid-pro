@@ -21,6 +21,8 @@ data class Schedule(
     @Json(name = "corpsefinderEnabled") val useCorpseFinder: Boolean = false,
     @Json(name = "systemcleanerEnabled") val useSystemCleaner: Boolean = false,
     @Json(name = "appcleanerEnabled") val useAppCleaner: Boolean = false,
+    @Json(name = "killAppsEnabled") val useKillApps: Boolean = false,
+    @Json(name = "cacheTrimEnabled") val useCacheTrim: Boolean = false,
     @Json(name = "commandsAfterSchedule") val commandsAfterSchedule: List<String> = emptyList(),
     @Json(name = "executedAt") val executedAt: Instant? = null,
 ) {

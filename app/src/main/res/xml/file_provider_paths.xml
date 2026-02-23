@@ -7,6 +7,6 @@
         name="debug_logs"
         path="debug/logs" />
     <root-path
-        name="device_root"
-        path="." />
+        name="shared_storage_root"
+        path="storage/" />
 </paths>

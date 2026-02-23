@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.pm.ShortcutManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.darken.sdmse.common.coroutine.AppScope
+import eu.darken.sdmse.common.datastore.value
 import eu.darken.sdmse.common.debug.logging.Logging.Priority.ERROR
 import eu.darken.sdmse.common.debug.logging.Logging.Priority.INFO
 import eu.darken.sdmse.common.debug.logging.asLog
 import eu.darken.sdmse.common.debug.logging.log
 import eu.darken.sdmse.common.debug.logging.logTag
+import eu.darken.sdmse.common.rngString
 import eu.darken.sdmse.main.core.GeneralSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
@@ -50,11 +52,12 @@ class ShortcutManager @Inject constructor(
 
     private suspend fun updateShortcuts(state: ShortcutState) {
         log(TAG, INFO) { "updateShortcuts(): $state" }
+        val shortcutAuthToken = ensureShortcutToken()
 
         val shortcuts = buildList {
-            add(AppShortcut.AppControl.toShortcutInfo(context))
+            add(AppShortcut.AppControl.toShortcutInfo(context, shortcutAuthToken))
             if (state.oneTapShortCutEnabled) {
-                add(AppShortcut.MainAction.OneTap.toShortcutInfo(context))
+                add(AppShortcut.MainAction.OneTap.toShortcutInfo(context, shortcutAuthToken))
             }
         }
 
@@ -64,6 +67,15 @@ class ShortcutManager @Inject constructor(
         } catch (e: Exception) {
             log(TAG, ERROR) { "Failed to update shortcuts: $e" }
         }
+    }
+
+    private suspend fun ensureShortcutToken(): String {
+        val existingToken = generalSettings.shortcutActionToken.value()
+        if (!existingToken.isNullOrBlank()) return existingToken
+
+        val newToken = rngString
+        generalSettings.shortcutActionToken.value(newToken)
+        return newToken
     }
 
     companion object {

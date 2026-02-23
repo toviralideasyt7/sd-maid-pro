@@ -120,6 +120,20 @@
                 android:layout_height="wrap_content"
                 android:text="@string/appcleaner_tool_name" />
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/tool_killapps_toggle"
+                style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scheduler_tool_killapps_name" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/tool_cachetrim_toggle"
+                style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scheduler_tool_cachetrim_name" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/commands_container"
                 android:layout_width="match_parent"

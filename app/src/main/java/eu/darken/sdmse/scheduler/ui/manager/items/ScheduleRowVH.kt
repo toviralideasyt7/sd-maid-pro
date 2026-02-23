@@ -104,6 +104,19 @@ class ScheduleRowVH(parent: ViewGroup) :
             setOnCheckedChangeListener { _, _ -> item.onToggleAppCleaner() }
         }
 
+        toolKillappsToggle.apply {
+            isVisible = item.showCommands
+            isEnabled = !schedule.isEnabled
+            setChecked2(schedule.useKillApps)
+            setOnCheckedChangeListener { _, _ -> item.onToggleKillApps() }
+        }
+        toolCachetrimToggle.apply {
+            isVisible = item.showCommands
+            isEnabled = !schedule.isEnabled
+            setChecked2(schedule.useCacheTrim)
+            setOnCheckedChangeListener { _, _ -> item.onToggleCacheTrim() }
+        }
+
         commandsContainer.isVisible = item.showCommands
         commandsInfo.text = if (schedule.commandsAfterSchedule.isNotEmpty()) {
             schedule.commandsAfterSchedule.mapIndexed { index, s -> "#$index: $s" }.joinToString("\n")
@@ -126,6 +139,8 @@ class ScheduleRowVH(parent: ViewGroup) :
         val onToggleCorpseFinder: () -> Unit,
         val onToggleSystemCleaner: () -> Unit,
         val onToggleAppCleaner: () -> Unit,
+        val onToggleKillApps: () -> Unit,
+        val onToggleCacheTrim: () -> Unit,
         val onEditFinalCommands: () -> Unit,
     ) : SchedulerAdapter.Item {
 

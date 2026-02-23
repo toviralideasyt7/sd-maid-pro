@@ -15,14 +15,14 @@ sealed class AppShortcut(
     @StringRes val longLabel: Int,
     @DrawableRes val iconRes: Int,
 ) {
-    abstract fun createIntent(context: Context): Intent
+    abstract fun createIntent(context: Context, authToken: String): Intent
 
-    fun toShortcutInfo(context: Context): ShortcutInfo {
+    fun toShortcutInfo(context: Context, authToken: String): ShortcutInfo {
         return ShortcutInfo.Builder(context, id)
             .setShortLabel(context.getString(shortLabel))
             .setLongLabel(context.getString(longLabel))
             .setIcon(Icon.createWithResource(context, iconRes))
-            .setIntent(createIntent(context))
+            .setIntent(createIntent(context, authToken))
             .build()
     }
 
@@ -32,9 +32,10 @@ sealed class AppShortcut(
         longLabel = R.string.shortcut_appcontrol_long,
         iconRes = R.drawable.ic_shortcut_apps
     ) {
-        override fun createIntent(context: Context): Intent = Intent(context, ShortcutActivity::class.java).apply {
+        override fun createIntent(context: Context, authToken: String): Intent = Intent(context, ShortcutActivity::class.java).apply {
             action = ShortcutActivity.ACTION_OPEN_APPCONTROL
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(ShortcutActivity.EXTRA_SHORTCUT_TOKEN, authToken)
         }
     }
 
@@ -45,9 +46,10 @@ sealed class AppShortcut(
         @DrawableRes iconRes: Int,
     ) : AppShortcut(id, shortLabel, longLabel, iconRes) {
 
-        override fun createIntent(context: Context): Intent = Intent(context, ShortcutActivity::class.java).apply {
+        override fun createIntent(context: Context, authToken: String): Intent = Intent(context, ShortcutActivity::class.java).apply {
             action = ShortcutActivity.ACTION_SCAN_DELETE
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(ShortcutActivity.EXTRA_SHORTCUT_TOKEN, authToken)
         }
 
         object OneTap : MainAction(

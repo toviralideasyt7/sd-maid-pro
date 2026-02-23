@@ -7,6 +7,7 @@ import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import eu.darken.sdmse.common.BuildConfigWrap
 import eu.darken.sdmse.common.debug.logging.Logging.Priority.VERBOSE
 import eu.darken.sdmse.common.debug.logging.log
 import eu.darken.sdmse.common.debug.logging.logTag
@@ -29,7 +30,11 @@ class HttpModule {
             log(TAG, VERBOSE) { it }
         }
         return HttpLoggingInterceptor(logger).apply {
-            level = (HttpLoggingInterceptor.Level.BODY)
+            level = when (BuildConfigWrap.BUILD_TYPE) {
+                BuildConfigWrap.BuildType.DEV -> HttpLoggingInterceptor.Level.BODY
+                BuildConfigWrap.BuildType.BETA -> HttpLoggingInterceptor.Level.BASIC
+                BuildConfigWrap.BuildType.RELEASE -> HttpLoggingInterceptor.Level.NONE
+            }
         }
     }
 

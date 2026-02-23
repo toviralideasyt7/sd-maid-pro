@@ -7,6 +7,7 @@ import android.net.Uri
 import dagger.Reusable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.darken.sdmse.common.debug.logging.Logging.Priority.ERROR
+import eu.darken.sdmse.common.debug.logging.Logging.Priority.WARN
 import eu.darken.sdmse.common.debug.logging.log
 import javax.inject.Inject
 
@@ -21,7 +22,13 @@ class WebpageTool @Inject constructor(
 
     companion object {
         fun open(context: Context, address: String) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(address)).apply {
+            val uri = Uri.parse(address)
+            if (uri.scheme?.equals("https", ignoreCase = true) != true) {
+                log(WARN) { "Blocked non-HTTPS URL: $address" }
+                return
+            }
+
+            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             try {

@@ -9,7 +9,9 @@ import eu.darken.sdmse.appcleaner.core.AppCleaner
 import eu.darken.sdmse.appcleaner.core.tasks.AppCleanerOneClickTask
 import eu.darken.sdmse.common.coroutine.AppCoroutineScope
 import eu.darken.sdmse.common.datastore.value
+import eu.darken.sdmse.common.datastore.valueBlocking
 import eu.darken.sdmse.common.debug.logging.Logging.Priority.INFO
+import eu.darken.sdmse.common.debug.logging.Logging.Priority.WARN
 import eu.darken.sdmse.common.debug.logging.log
 import eu.darken.sdmse.common.debug.logging.logTag
 import eu.darken.sdmse.common.upgrade.UpgradeRepo
@@ -44,6 +46,11 @@ class ShortcutActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val action = intent?.action
+        if (!isAuthorized(action)) {
+            log(TAG, WARN) { "Rejected shortcut action due to missing/invalid token: $action" }
+            finish()
+            return
+        }
         log(TAG, INFO) { "Shortcut action received: $action" }
 
         when (action) {
@@ -131,5 +138,16 @@ class ShortcutActivity : ComponentActivity() {
         const val ACTION_UPGRADE = "eu.darken.sdmse.ACTION_UPGRADE"
 
         const val EXTRA_SHORTCUT_ACTION = "shortcut_action"
+        const val EXTRA_SHORTCUT_TOKEN = "shortcut_token"
+    }
+
+    private fun isAuthorized(action: String?): Boolean {
+        if (action != ACTION_OPEN_APPCONTROL && action != ACTION_SCAN_DELETE) return false
+
+        val expectedToken = generalSettings.shortcutActionToken.valueBlocking
+        if (expectedToken.isNullOrBlank()) return false
+
+        val providedToken = intent?.getStringExtra(EXTRA_SHORTCUT_TOKEN)
+        return providedToken == expectedToken
     }
 }

@@ -34,7 +34,6 @@ class ViewIntentTool @Inject constructor(
 
         val intent = Intent(Intent.ACTION_VIEW).apply {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             setDataAndType(uri, mimeType)
         }
 

@@ -955,12 +955,22 @@
     <string name="scheduler_setting_charging_summary">If the device is not charging, the scheduled execution will be skipped.</string>
     <string name="scheduler_setting_automation_title">Accessibility service</string>
     <string name="scheduler_setting_automation_summary">Include actions that use an accessibility service. This requires that SD Maid can interact with your screen (i.e. it\'s unlocked) when the tasks are executed.</string>
+    <string name="scheduler_tool_killapps_name">Kill background apps (Shizuku/Root)</string>
+    <string name="scheduler_tool_cachetrim_name">Trim system cache (999G)</string>
     <string name="scheduler_notification_channel_label">Scheduler</string>
     <string name="scheduler_notification_title">Scheduled task</string>
     <string name="scheduler_notification_message">Executing: \"%s\"</string>
     <string name="scheduler_notification_result_title">Scheduler finished</string>
     <string name="scheduler_notification_result_success_message">All scheduled tasks ran successfully.</string>
     <string name="scheduler_notification_result_failure_message">Some scheduled tasks failed or encountered errors. Try running them manually.</string>
+    <plurals name="scheduler_maintenance_result_killed_x_apps">
+        <item quantity="one">Stopped %d app.</item>
+        <item quantity="other">Stopped %d apps.</item>
+    </plurals>
+    <string name="scheduler_maintenance_result_trim_x_mb">Trimmed cache. Reclaimed %d MB.</string>
+    <string name="scheduler_maintenance_result_trim_failed">Cache trim failed.</string>
+    <string name="scheduler_maintenance_result_kill_trim">Stopped %1$d apps. Reclaimed %2$d MB.</string>
+    <string name="scheduler_maintenance_stopped_apps_x">Stopped: %s</string>
     <string name="scheduler_commands_after_schedule_label">Post-schedule commands</string>
     <string name="scheduler_commands_after_schedule_desc">Android shell commands that will be executed at the end of a schedule.</string>
     <string name="scheduler_battery_optimization_hint">Consider disabling battery optimizations for SD Maid if you experience issues with background execution.</string>

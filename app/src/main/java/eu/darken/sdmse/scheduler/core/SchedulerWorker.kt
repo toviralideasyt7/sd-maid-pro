@@ -1,6 +1,9 @@
 package eu.darken.sdmse.scheduler.core
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.os.Environment
+import android.os.StatFs
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -42,6 +45,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
+import kotlin.math.max
 
 
 @HiltWorker
@@ -180,7 +184,10 @@ class SchedulerWorker @AssistedInject constructor(
         }
 
         log(TAG) { "Waiting for jobs to complete: $taskJobs" }
-        val taskResults = taskJobs.awaitAll().toSet()
+        val taskResults = taskJobs.awaitAll().toMutableSet()
+
+        performMaintenanceActions(schedule)?.let { taskResults.add(it) }
+
         schedulerNotifications.notifyResult(taskResults)
         log(TAG) { "All task jobs have finished." }
 
@@ -198,8 +205,115 @@ class SchedulerWorker @AssistedInject constructor(
         }
     }
 
+    private suspend fun performMaintenanceActions(schedule: Schedule): SchedulerNotifications.Results? {
+        if (!schedule.useKillApps && !schedule.useCacheTrim) return null
+
+        val task = SchedulerMaintenanceTask(
+            scheduleId = schedule.id,
+            killAppsRequested = schedule.useKillApps,
+            trimCachesRequested = schedule.useCacheTrim,
+        )
+
+        val shellMode = when {
+            rootManager.canUseRootNow() -> ShellOps.Mode.ROOT
+            adbManager.canUseAdbNow() -> ShellOps.Mode.ADB
+            else -> null
+        }
+
+        if (shellMode == null) {
+            return SchedulerNotifications.Results(
+                task = task,
+                error = IllegalStateException("Kill apps/cache trim requires Root or Shizuku (ADB) access."),
+            )
+        }
+
+        return try {
+            val stoppedPackages = mutableListOf<String>()
+            val failedPackages = mutableListOf<String>()
+
+            if (schedule.useKillApps) {
+                val killTargets = getKillablePackages()
+                log(TAG, INFO) { "Killing ${killTargets.size} third-party apps via $shellMode" }
+
+                killTargets.forEach { pkgName ->
+                    val result = shellOps.execute(ShellOpsCmd("am force-stop $pkgName"), shellMode)
+                    if (result.isSuccess) {
+                        stoppedPackages.add(pkgName)
+                        log(TAG, INFO) { "Successfully stopped: $pkgName" }
+                    } else {
+                        failedPackages.add(pkgName)
+                        log(TAG, WARN) { "Failed to stop $pkgName: ${result.errors}" }
+                    }
+                }
+            }
+
+            var trimSucceeded = false
+            var reclaimedMb = 0L
+            if (schedule.useCacheTrim) {
+                log(TAG, INFO) { "Executing cache trim via $shellMode" }
+                val beforeMb = getAvailableExternalStorageMb()
+                val trimResult = shellOps.execute(ShellOpsCmd("pm trim-caches 999G"), shellMode)
+                trimSucceeded = trimResult.isSuccess
+                if (trimSucceeded) {
+                    val afterMb = getAvailableExternalStorageMb()
+                    reclaimedMb = max(0L, afterMb - beforeMb)
+                } else {
+                    log(TAG, WARN) { "Cache trim failed: ${trimResult.errors}" }
+                }
+            }
+
+            SchedulerNotifications.Results(
+                task = task,
+                result = SchedulerMaintenanceTask.Result(
+                    killAppsRequested = schedule.useKillApps,
+                    trimCachesRequested = schedule.useCacheTrim,
+                    stoppedPackages = stoppedPackages,
+                    failedPackages = failedPackages,
+                    trimSucceeded = trimSucceeded,
+                    reclaimedMb = reclaimedMb,
+                ),
+            )
+        } catch (e: Exception) {
+            log(TAG, ERROR) { "Maintenance action failed: ${e.asLog()}" }
+            SchedulerNotifications.Results(task = task, error = e)
+        }
+    }
+
+    private fun getKillablePackages(): List<String> {
+        val excluded = setOf(
+            context.packageName,
+            "moe.shizuku.privileged.api",
+            "com.termux",
+            "com.termux.api",
+            "com.termux.boot",
+        )
+
+        return context.packageManager
+            .getInstalledPackages(0)
+            .asSequence()
+            .filter { pkgInfo ->
+                val appInfo = pkgInfo.applicationInfo ?: return@filter false
+                val isSystem = appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
+                val isUpdatedSystem = appInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP != 0
+                !isSystem && !isUpdatedSystem
+            }
+            .map { it.packageName }
+            .filter { pkg -> pkg !in excluded && VALID_PACKAGE_PATTERN.matches(pkg) }
+            .distinct()
+            .sorted()
+            .toList()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun getAvailableExternalStorageMb(): Long {
+        val statFs = StatFs(Environment.getExternalStorageDirectory().path)
+        return statFs.availableBytes / MB_IN_BYTES
+    }
+
     companion object {
         const val INPUT_SCHEDULE_ID = "scheduler.worker.input.scheduleid"
         val TAG = logTag("Scheduler", "Worker")
+        private val VALID_PACKAGE_PATTERN = Regex("[A-Za-z0-9_.]+")
+        private const val MB_IN_BYTES = 1024L * 1024L
     }
 }
