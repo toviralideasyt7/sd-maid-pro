@@ -958,8 +958,17 @@
     <string name="scheduler_setting_automation_summary">Include actions that use an accessibility service. This requires that SD Maid can interact with your screen (i.e. it\'s unlocked) when the tasks are executed.</string>
     <string name="scheduler_tool_killapps_name">Kill background apps (Shizuku/Root)</string>
     <string name="scheduler_tool_cachetrim_name">Trim system cache (999G)</string>
+    <string name="scheduler_tool_vacuum_name">Optimize app storage (speed-profile)</string>
+    <string name="scheduler_tool_purgelogs_name">Purge tombstones/logs (Shizuku/Root)</string>
     <string name="dashboard_tool_vacuum_name">Optimize app storage (speed-profile)</string>
     <string name="dashboard_tool_purgelogs_name">Purge tombstones/logs (Shizuku/Root)</string>
+    <string name="dashboard_manual_maintenance_label">Manual maintenance</string>
+    <string name="dashboard_manual_maintenance_menu">Manual maintenance</string>
+    <string name="dashboard_manual_run_killapps_action">Run Kill Background Apps Now</string>
+    <string name="dashboard_manual_run_cachetrim_action">Run Trim Cache Now</string>
+    <string name="dashboard_manual_run_vacuum_action">Run Optimize Apps Now</string>
+    <string name="dashboard_manual_run_purgelogs_action">Run Purge Tombstones/Logs Now</string>
+    <string name="dashboard_manual_run_selected_action">Run Selected Advanced Cleanup</string>
     <string name="scheduler_notification_channel_label">Scheduler</string>
     <string name="scheduler_notification_title">Scheduled task</string>
     <string name="scheduler_notification_message">Executing: \"%s\"</string>
@@ -974,6 +983,15 @@
     <string name="scheduler_maintenance_result_trim_failed">Cache trim failed.</string>
     <string name="scheduler_maintenance_result_kill_trim">Stopped %1$d apps. Reclaimed %2$d MB.</string>
     <string name="scheduler_maintenance_stopped_apps_x">Stopped: %s</string>
+    <plurals name="scheduler_maintenance_result_optimized_x_apps">
+        <item quantity="one">Optimized %d app.</item>
+        <item quantity="other">Optimized %d apps.</item>
+    </plurals>
+    <string name="scheduler_maintenance_result_optimization_failed_x">Optimization failed: %d</string>
+    <string name="scheduler_maintenance_optimized_apps_x">Optimized: %s</string>
+    <string name="scheduler_maintenance_result_log_purge_success">Purged system tombstones/logs.</string>
+    <string name="scheduler_maintenance_result_log_purge_failed">System tombstone/log purge failed.</string>
+    <string name="scheduler_maintenance_purged_paths_x">Paths: %s</string>
     <string name="scheduler_commands_after_schedule_label">Post-schedule commands</string>
     <string name="scheduler_commands_after_schedule_desc">Android shell commands that will be executed at the end of a schedule.</string>
     <string name="scheduler_battery_optimization_hint">Consider disabling battery optimizations for SD Maid if you experience issues with background execution.</string>

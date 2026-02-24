@@ -768,57 +768,108 @@ class DashboardViewModel @Inject constructor(
             }
         }
         launch {
-            val killApps = generalSettings.oneClickKillAppsEnabled.value()
-            val trimCaches = generalSettings.oneClickCacheTrimEnabled.value()
-            val vacuumApps = generalSettings.oneClickVacuumAppsEnabled.value()
-            val purgeLogs = generalSettings.oneClickPurgeLogsEnabled.value()
-            if (!killApps && !trimCaches && !vacuumApps && !purgeLogs) {
-                log(VERBOSE) { "Maintenance actions are disabled in one-click mode." }
-                return@launch
-            }
             if (actionState != BottomBarState.Action.ONECLICK) return@launch
-
-            val execution = maintenanceOps.execute(
-                killAppsRequested = killApps,
-                trimCachesRequested = trimCaches,
-                vacuumAppsRequested = vacuumApps,
-                purgeSystemLogsRequested = purgeLogs,
-            )
-
-            execution.error?.let {
-                log(TAG, WARN) { "Manual maintenance failed: ${it.asLog()}" }
-                events.postValue(DashboardEvents.Message(it.message ?: "Manual maintenance failed."))
-                return@launch
-            }
-
-            if (execution.killAppsRequested || execution.trimCachesRequested) {
-                events.postValue(
-                    DashboardEvents.TaskResult(
-                        SchedulerMaintenanceTask.Result(
-                            killAppsRequested = execution.killAppsRequested,
-                            trimCachesRequested = execution.trimCachesRequested,
-                            stoppedPackages = execution.stoppedPackages,
-                            failedPackages = execution.failedPackages,
-                            trimSucceeded = execution.trimSucceeded,
-                            reclaimedMb = execution.reclaimedMb,
-                        )
-                    )
-                )
-            }
-
-            val details = mutableListOf<String>()
-            if (execution.vacuumAppsRequested) {
-                details += "App optimization: ${execution.vacuumSucceededPackages.size} succeeded, ${execution.vacuumFailedPackages.size} failed."
-            }
-            if (execution.purgeSystemLogsRequested) {
-                details += if (execution.purgeLogsSucceeded) {
-                    "System tombstone/log purge completed."
-                } else {
-                    "System tombstone/log purge failed."
-                }
-            }
-            if (details.isNotEmpty()) events.postValue(DashboardEvents.Message(details.joinToString("\n")))
+            runSelectedMaintenanceNowInternal()
         }
+    }
+
+    fun runKillAppsNow() = launch {
+        executeMaintenance(
+            killAppsRequested = true,
+            trimCachesRequested = false,
+            vacuumAppsRequested = false,
+            purgeSystemLogsRequested = false,
+        )
+    }
+
+    fun runTrimCacheNow() = launch {
+        executeMaintenance(
+            killAppsRequested = false,
+            trimCachesRequested = true,
+            vacuumAppsRequested = false,
+            purgeSystemLogsRequested = false,
+        )
+    }
+
+    fun runVacuumNow() = launch {
+        executeMaintenance(
+            killAppsRequested = false,
+            trimCachesRequested = false,
+            vacuumAppsRequested = true,
+            purgeSystemLogsRequested = false,
+        )
+    }
+
+    fun runPurgeLogsNow() = launch {
+        executeMaintenance(
+            killAppsRequested = false,
+            trimCachesRequested = false,
+            vacuumAppsRequested = false,
+            purgeSystemLogsRequested = true,
+        )
+    }
+
+    fun runSelectedMaintenanceNow() = launch {
+        runSelectedMaintenanceNowInternal()
+    }
+
+    private suspend fun runSelectedMaintenanceNowInternal() {
+        val killApps = generalSettings.oneClickKillAppsEnabled.value()
+        val trimCaches = generalSettings.oneClickCacheTrimEnabled.value()
+        val vacuumApps = generalSettings.oneClickVacuumAppsEnabled.value()
+        val purgeLogs = generalSettings.oneClickPurgeLogsEnabled.value()
+
+        if (!killApps && !trimCaches && !vacuumApps && !purgeLogs) {
+            log(VERBOSE) { "Maintenance actions are disabled in one-click mode." }
+            events.postValue(DashboardEvents.Message("Enable at least one maintenance option first."))
+            return
+        }
+
+        executeMaintenance(
+            killAppsRequested = killApps,
+            trimCachesRequested = trimCaches,
+            vacuumAppsRequested = vacuumApps,
+            purgeSystemLogsRequested = purgeLogs,
+        )
+    }
+
+    private suspend fun executeMaintenance(
+        killAppsRequested: Boolean,
+        trimCachesRequested: Boolean,
+        vacuumAppsRequested: Boolean,
+        purgeSystemLogsRequested: Boolean,
+    ) {
+        val execution = maintenanceOps.execute(
+            killAppsRequested = killAppsRequested,
+            trimCachesRequested = trimCachesRequested,
+            vacuumAppsRequested = vacuumAppsRequested,
+            purgeSystemLogsRequested = purgeSystemLogsRequested,
+        )
+
+        execution.error?.let {
+            log(TAG, WARN) { "Manual maintenance failed: ${it.asLog()}" }
+            events.postValue(DashboardEvents.Message(it.message ?: "Manual maintenance failed."))
+            return
+        }
+
+        events.postValue(
+            DashboardEvents.TaskResult(
+                SchedulerMaintenanceTask.Result(
+                    killAppsRequested = execution.killAppsRequested,
+                    trimCachesRequested = execution.trimCachesRequested,
+                    stoppedPackages = execution.stoppedPackages,
+                    failedPackages = execution.failedPackages,
+                    trimSucceeded = execution.trimSucceeded,
+                    reclaimedMb = execution.reclaimedMb,
+                    vacuumAppsRequested = execution.vacuumAppsRequested,
+                    vacuumSucceededPackages = execution.vacuumSucceededPackages,
+                    vacuumFailedPackages = execution.vacuumFailedPackages,
+                    purgeSystemLogsRequested = execution.purgeSystemLogsRequested,
+                    purgeLogsSucceeded = execution.purgeLogsSucceeded,
+                    purgedPaths = execution.purgedPaths,
+                )
+            )
+        )
     }
 
     fun confirmCorpseDeletion() = launch {

@@ -1,9 +1,11 @@
 package eu.darken.sdmse.scheduler.core
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Environment
 import android.os.StatFs
+import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.darken.sdmse.common.adb.AdbManager
 import eu.darken.sdmse.common.adb.canUseAdbNow
@@ -136,13 +138,15 @@ class MaintenanceOps @Inject constructor(
     }
 
     private fun getKillablePackages(): List<String> {
-        val excluded = setOf(
-            context.packageName,
-            "moe.shizuku.privileged.api",
-            "com.termux",
-            "com.termux.api",
-            "com.termux.boot",
-        )
+        val excluded = buildSet {
+            add(context.packageName)
+            add("moe.shizuku.privileged.api")
+            add("com.termux")
+            add("com.termux.api")
+            add("com.termux.boot")
+            addAll(getHomeLauncherPackages())
+            getDefaultInputMethodPackage()?.let { add(it) }
+        }
 
         val isSystemApp: (ApplicationInfo) -> Boolean = { appInfo ->
             val system = appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
@@ -168,6 +172,19 @@ class MaintenanceOps @Inject constructor(
             .toList()
     }
 
+    private fun getHomeLauncherPackages(): Set<String> {
+        val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+        return context.packageManager
+            .queryIntentActivities(homeIntent, 0)
+            .mapNotNull { it.activityInfo?.packageName }
+            .toSet()
+    }
+
+    private fun getDefaultInputMethodPackage(): String? {
+        val raw = Settings.Secure.getString(context.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD) ?: return null
+        return raw.substringBefore('/').takeIf { it.isNotBlank() }
+    }
+
     @Suppress("DEPRECATION")
     private fun getAvailableExternalStorageMb(): Long {
         val statFs = StatFs(Environment.getExternalStorageDirectory().path)
@@ -186,6 +203,7 @@ class MaintenanceOps @Inject constructor(
         val vacuumSucceededPackages: List<String> = emptyList(),
         val vacuumFailedPackages: List<String> = emptyList(),
         val purgeLogsSucceeded: Boolean = false,
+        val purgedPaths: List<String> = listOf("/data/tombstones/*", "/data/log/*"),
         val error: Exception? = null,
     )
 

@@ -162,6 +162,16 @@ class SchedulerManagerViewModel @Inject constructor(
                         schedulerManager.saveSchedule(schedule.copy(useCacheTrim = !schedule.useCacheTrim))
                     }
                 },
+                onToggleVacuumApps = {
+                    launch {
+                        schedulerManager.saveSchedule(schedule.copy(useVacuumApps = !schedule.useVacuumApps))
+                    }
+                },
+                onTogglePurgeLogs = {
+                    launch {
+                        schedulerManager.saveSchedule(schedule.copy(usePurgeLogs = !schedule.usePurgeLogs))
+                    }
+                },
                 onEditFinalCommands = {
                     events.postValue(SchedulerManagerEvents.FinalCommandsEdit(schedule))
                 },

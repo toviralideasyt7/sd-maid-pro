@@ -61,4 +61,58 @@
         android:layout_height="wrap_content"
         android:text="@string/deduplicator_tool_name" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/manual_actions_label"
+        style="@style/TextAppearance.Material3.TitleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/dashboard_manual_maintenance_label"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/manual_killapps_action"
+        style="@style/SDMButton.Tonal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/dashboard_manual_run_killapps_action"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/manual_cachetrim_action"
+        style="@style/SDMButton.Tonal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/dashboard_manual_run_cachetrim_action"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/manual_vacuum_action"
+        style="@style/SDMButton.Tonal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/dashboard_manual_run_vacuum_action"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/manual_purgelogs_action"
+        style="@style/SDMButton.Tonal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/dashboard_manual_run_purgelogs_action"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/manual_runselected_action"
+        style="@style/SDMButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/dashboard_manual_run_selected_action"
+        android:visibility="gone" />
+
 </LinearLayout>

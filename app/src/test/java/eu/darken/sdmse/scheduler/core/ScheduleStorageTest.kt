@@ -63,6 +63,8 @@ class ScheduleStorageTest : BaseTest() {
                         "appcleanerEnabled": false,
                         "killAppsEnabled": false,
                         "cacheTrimEnabled": false,
+                        "vacuumAppsEnabled": false,
+                        "purgeLogsEnabled": false,
                         "commandsAfterSchedule": []
                     }
                 ]
@@ -180,6 +182,8 @@ class ScheduleStorageTest : BaseTest() {
             useAppCleaner = true,
             useKillApps = true,
             useCacheTrim = true,
+            useVacuumApps = true,
+            usePurgeLogs = true,
             commandsAfterSchedule = listOf("reboot"),
             executedAt = Instant.parse("2024-01-14T21:30:00Z"),
         )
@@ -203,6 +207,8 @@ class ScheduleStorageTest : BaseTest() {
                         "appcleanerEnabled": true,
                         "killAppsEnabled": true,
                         "cacheTrimEnabled": true,
+                        "vacuumAppsEnabled": true,
+                        "purgeLogsEnabled": true,
                         "commandsAfterSchedule": ["reboot"],
                         "executedAt": "2024-01-14T21:30:00Z"
                     }
@@ -251,6 +257,8 @@ class ScheduleStorageTest : BaseTest() {
                 useAppCleaner = true,
                 useKillApps = false,
                 useCacheTrim = false,
+                useVacuumApps = false,
+                usePurgeLogs = false,
                 commandsAfterSchedule = listOf("reboot"),
                 executedAt = Instant.parse("2024-01-14T21:30:00Z"),
             )

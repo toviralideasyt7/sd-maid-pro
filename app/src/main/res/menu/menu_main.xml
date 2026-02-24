@@ -20,4 +20,11 @@
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction"  />
 
+    <item
+        android:id="@+id/menu_action_manual_maintenance"
+        android:icon="@drawable/ic_run_24"
+        android:orderInCategory="120"
+        android:title="@string/dashboard_manual_maintenance_menu"
+        app:showAsAction="ifRoom" />
+
 </menu>

@@ -73,6 +73,20 @@ class DashboardFragment : Fragment3(R.layout.dashboard_fragment) {
                         true
                     }
 
+                    R.id.menu_action_manual_maintenance -> {
+                        oneClickOptions.show(
+                            requireContext(),
+                            OneClickOptionsDialog.ManualActions(
+                                onRunKillAppsNow = { vm.runKillAppsNow() },
+                                onRunTrimCacheNow = { vm.runTrimCacheNow() },
+                                onRunVacuumNow = { vm.runVacuumNow() },
+                                onRunPurgeLogsNow = { vm.runPurgeLogsNow() },
+                                onRunSelectedNow = { vm.runSelectedMaintenanceNow() },
+                            )
+                        )
+                        true
+                    }
+
                     R.id.menu_action_settings -> {
                         DashboardFragmentDirections.actionDashboardFragmentToSettingsContainerFragment().navigate()
                         true
@@ -139,7 +153,16 @@ class DashboardFragment : Fragment3(R.layout.dashboard_fragment) {
                     }
                 }
                 setOnLongClickListener {
-                    oneClickOptions.show(requireContext())
+                    oneClickOptions.show(
+                        requireContext(),
+                        OneClickOptionsDialog.ManualActions(
+                            onRunKillAppsNow = { vm.runKillAppsNow() },
+                            onRunTrimCacheNow = { vm.runTrimCacheNow() },
+                            onRunVacuumNow = { vm.runVacuumNow() },
+                            onRunPurgeLogsNow = { vm.runPurgeLogsNow() },
+                            onRunSelectedNow = { vm.runSelectedMaintenanceNow() },
+                        )
+                    )
                     true
                 }
             }

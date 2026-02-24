@@ -116,6 +116,18 @@ class ScheduleRowVH(parent: ViewGroup) :
             setChecked2(schedule.useCacheTrim)
             setOnCheckedChangeListener { _, _ -> item.onToggleCacheTrim() }
         }
+        toolVacuumToggle.apply {
+            isVisible = item.showCommands
+            isEnabled = !schedule.isEnabled
+            setChecked2(schedule.useVacuumApps)
+            setOnCheckedChangeListener { _, _ -> item.onToggleVacuumApps() }
+        }
+        toolPurgelogsToggle.apply {
+            isVisible = item.showCommands
+            isEnabled = !schedule.isEnabled
+            setChecked2(schedule.usePurgeLogs)
+            setOnCheckedChangeListener { _, _ -> item.onTogglePurgeLogs() }
+        }
 
         commandsContainer.isVisible = item.showCommands
         commandsInfo.text = if (schedule.commandsAfterSchedule.isNotEmpty()) {
@@ -141,6 +153,8 @@ class ScheduleRowVH(parent: ViewGroup) :
         val onToggleAppCleaner: () -> Unit,
         val onToggleKillApps: () -> Unit,
         val onToggleCacheTrim: () -> Unit,
+        val onToggleVacuumApps: () -> Unit,
+        val onTogglePurgeLogs: () -> Unit,
         val onEditFinalCommands: () -> Unit,
     ) : SchedulerAdapter.Item {
 

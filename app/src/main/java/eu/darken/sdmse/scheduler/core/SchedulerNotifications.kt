@@ -122,7 +122,7 @@ class SchedulerNotifications @Inject constructor(
             val details = results
                 .mapNotNull { result ->
                     result.result?.let {
-                        val tool = context.getString(result.task.type.labelRes())
+                        val tool = context.getString(result.task.labelRes())
                         val primary = it.primaryInfo.get(context)
                         val secondary = it.secondaryInfo?.get(context)
                         if (!secondary.isNullOrBlank()) {
@@ -142,6 +142,11 @@ class SchedulerNotifications @Inject constructor(
         setContentText(text)
         setStyle(NotificationCompat.BigTextStyle().bigText(text))
         log(TAG) { "getResultBuilder(): $results" }
+    }
+
+    private fun SDMTool.Task.labelRes(): Int {
+        if (this is SchedulerMaintenanceTask) return R.string.dashboard_manual_maintenance_label
+        return type.labelRes()
     }
 
     private fun SDMTool.Type.labelRes(): Int = when (this) {

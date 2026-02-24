@@ -23,6 +23,8 @@ data class Schedule(
     @Json(name = "appcleanerEnabled") val useAppCleaner: Boolean = false,
     @Json(name = "killAppsEnabled") val useKillApps: Boolean = false,
     @Json(name = "cacheTrimEnabled") val useCacheTrim: Boolean = false,
+    @Json(name = "vacuumAppsEnabled") val useVacuumApps: Boolean = false,
+    @Json(name = "purgeLogsEnabled") val usePurgeLogs: Boolean = false,
     @Json(name = "commandsAfterSchedule") val commandsAfterSchedule: List<String> = emptyList(),
     @Json(name = "executedAt") val executedAt: Instant? = null,
 ) {

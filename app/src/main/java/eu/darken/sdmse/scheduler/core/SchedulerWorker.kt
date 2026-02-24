@@ -203,18 +203,22 @@ class SchedulerWorker @AssistedInject constructor(
     }
 
     private suspend fun performMaintenanceActions(schedule: Schedule): SchedulerNotifications.Results? {
-        if (!schedule.useKillApps && !schedule.useCacheTrim) return null
+        if (!schedule.useKillApps && !schedule.useCacheTrim && !schedule.useVacuumApps && !schedule.usePurgeLogs) return null
 
         val task = SchedulerMaintenanceTask(
             scheduleId = schedule.id,
             killAppsRequested = schedule.useKillApps,
             trimCachesRequested = schedule.useCacheTrim,
+            vacuumAppsRequested = schedule.useVacuumApps,
+            purgeSystemLogsRequested = schedule.usePurgeLogs,
         )
 
         return try {
             val execution = maintenanceOps.execute(
                 killAppsRequested = schedule.useKillApps,
                 trimCachesRequested = schedule.useCacheTrim,
+                vacuumAppsRequested = schedule.useVacuumApps,
+                purgeSystemLogsRequested = schedule.usePurgeLogs,
             )
             if (execution.error != null) {
                 SchedulerNotifications.Results(task = task, error = execution.error)
@@ -228,6 +232,12 @@ class SchedulerWorker @AssistedInject constructor(
                         failedPackages = execution.failedPackages,
                         trimSucceeded = execution.trimSucceeded,
                         reclaimedMb = execution.reclaimedMb,
+                        vacuumAppsRequested = execution.vacuumAppsRequested,
+                        vacuumSucceededPackages = execution.vacuumSucceededPackages,
+                        vacuumFailedPackages = execution.vacuumFailedPackages,
+                        purgeSystemLogsRequested = execution.purgeSystemLogsRequested,
+                        purgeLogsSucceeded = execution.purgeLogsSucceeded,
+                        purgedPaths = execution.purgedPaths,
                     ),
                 )
             }
