@@ -72,7 +72,9 @@ import eu.darken.sdmse.main.ui.dashboard.items.SetupCardVH
 import eu.darken.sdmse.main.ui.dashboard.items.TitleCardVH
 import eu.darken.sdmse.main.ui.dashboard.items.UpdateCardVH
 import eu.darken.sdmse.main.ui.dashboard.items.UpgradeCardVH
+import eu.darken.sdmse.scheduler.core.MaintenanceOps
 import eu.darken.sdmse.scheduler.core.SchedulerManager
+import eu.darken.sdmse.scheduler.core.SchedulerMaintenanceTask
 import eu.darken.sdmse.scheduler.ui.SchedulerDashCardVH
 import eu.darken.sdmse.setup.SetupManager
 import eu.darken.sdmse.squeezer.core.Squeezer
@@ -126,6 +128,7 @@ class DashboardViewModel @Inject constructor(
     private val upgradeRepo: UpgradeRepo,
     private val generalSettings: GeneralSettings,
     private val webpageTool: WebpageTool,
+    private val maintenanceOps: MaintenanceOps,
     schedulerManager: SchedulerManager,
     private val updateService: UpdateService,
     private val recorderModule: RecorderModule,
@@ -763,6 +766,58 @@ class DashboardViewModel @Inject constructor(
 
                 BottomBarState.Action.ONECLICK -> submitTask(DeduplicatorOneClickTask())
             }
+        }
+        launch {
+            val killApps = generalSettings.oneClickKillAppsEnabled.value()
+            val trimCaches = generalSettings.oneClickCacheTrimEnabled.value()
+            val vacuumApps = generalSettings.oneClickVacuumAppsEnabled.value()
+            val purgeLogs = generalSettings.oneClickPurgeLogsEnabled.value()
+            if (!killApps && !trimCaches && !vacuumApps && !purgeLogs) {
+                log(VERBOSE) { "Maintenance actions are disabled in one-click mode." }
+                return@launch
+            }
+            if (actionState != BottomBarState.Action.ONECLICK) return@launch
+
+            val execution = maintenanceOps.execute(
+                killAppsRequested = killApps,
+                trimCachesRequested = trimCaches,
+                vacuumAppsRequested = vacuumApps,
+                purgeSystemLogsRequested = purgeLogs,
+            )
+
+            execution.error?.let {
+                log(TAG, WARN) { "Manual maintenance failed: ${it.asLog()}" }
+                events.postValue(DashboardEvents.Message(it.message ?: "Manual maintenance failed."))
+                return@launch
+            }
+
+            if (execution.killAppsRequested || execution.trimCachesRequested) {
+                events.postValue(
+                    DashboardEvents.TaskResult(
+                        SchedulerMaintenanceTask.Result(
+                            killAppsRequested = execution.killAppsRequested,
+                            trimCachesRequested = execution.trimCachesRequested,
+                            stoppedPackages = execution.stoppedPackages,
+                            failedPackages = execution.failedPackages,
+                            trimSucceeded = execution.trimSucceeded,
+                            reclaimedMb = execution.reclaimedMb,
+                        )
+                    )
+                )
+            }
+
+            val details = mutableListOf<String>()
+            if (execution.vacuumAppsRequested) {
+                details += "App optimization: ${execution.vacuumSucceededPackages.size} succeeded, ${execution.vacuumFailedPackages.size} failed."
+            }
+            if (execution.purgeSystemLogsRequested) {
+                details += if (execution.purgeLogsSucceeded) {
+                    "System tombstone/log purge completed."
+                } else {
+                    "System tombstone/log purge failed."
+                }
+            }
+            if (details.isNotEmpty()) events.postValue(DashboardEvents.Message(details.joinToString("\n")))
         }
     }
 

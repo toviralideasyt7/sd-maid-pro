@@ -20,6 +20,10 @@ class OneClickOptionsDialog @Inject constructor(private val settings: GeneralSet
             corpsefinderToggle.isChecked = settings.oneClickCorpseFinderEnabled.valueBlocking
             systemcleanerToggle.isChecked = settings.oneClickSystemCleanerEnabled.valueBlocking
             appcleanerToggle.isChecked = settings.oneClickAppCleanerEnabled.valueBlocking
+            killappsToggle.isChecked = settings.oneClickKillAppsEnabled.valueBlocking
+            cachetrimToggle.isChecked = settings.oneClickCacheTrimEnabled.valueBlocking
+            vacuumToggle.isChecked = settings.oneClickVacuumAppsEnabled.valueBlocking
+            purgelogsToggle.isChecked = settings.oneClickPurgeLogsEnabled.valueBlocking
             deduplicatorToggle.isChecked = settings.oneClickDeduplicatorEnabled.valueBlocking
 
             corpsefinderToggle.setOnCheckedChangeListener { _, isChecked ->
@@ -30,6 +34,18 @@ class OneClickOptionsDialog @Inject constructor(private val settings: GeneralSet
             }
             appcleanerToggle.setOnCheckedChangeListener { _, isChecked ->
                 settings.oneClickAppCleanerEnabled.valueBlocking = isChecked
+            }
+            killappsToggle.setOnCheckedChangeListener { _, isChecked ->
+                settings.oneClickKillAppsEnabled.valueBlocking = isChecked
+            }
+            cachetrimToggle.setOnCheckedChangeListener { _, isChecked ->
+                settings.oneClickCacheTrimEnabled.valueBlocking = isChecked
+            }
+            vacuumToggle.setOnCheckedChangeListener { _, isChecked ->
+                settings.oneClickVacuumAppsEnabled.valueBlocking = isChecked
+            }
+            purgelogsToggle.setOnCheckedChangeListener { _, isChecked ->
+                settings.oneClickPurgeLogsEnabled.valueBlocking = isChecked
             }
             deduplicatorToggle.setOnCheckedChangeListener { _, isChecked ->
                 settings.oneClickDeduplicatorEnabled.valueBlocking = isChecked

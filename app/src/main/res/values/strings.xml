@@ -421,7 +421,8 @@
     <string name="systemcleaner_customfilter_import_action">Import new filter</string>
     <string name="systemcleaner_customfilter_export_action">Export selected filter</string>
 
-    <string name="appcleaner_tool_name">AppCleaner</string>
+    <string name="appcleaner_tool_name">Advanced AppCleaner</string>
+    <string name="appcleaner_tool_name_advanced">Advanced AppCleaner</string>
     <string name="appcleaner_explanation_short">Expendable data belonging to specific apps.</string>
     <string name="appcleaner_filter_defaultcachespublic_label">Public default caches</string>
     <string name="appcleaner_filter_defaultcachespublic_summary">Default public app caches. Accessible under Android/data on older Android versions. Deleted when tapping "Clear cache" in the system settings.</string>
@@ -957,6 +958,8 @@
     <string name="scheduler_setting_automation_summary">Include actions that use an accessibility service. This requires that SD Maid can interact with your screen (i.e. it\'s unlocked) when the tasks are executed.</string>
     <string name="scheduler_tool_killapps_name">Kill background apps (Shizuku/Root)</string>
     <string name="scheduler_tool_cachetrim_name">Trim system cache (999G)</string>
+    <string name="dashboard_tool_vacuum_name">Optimize app storage (speed-profile)</string>
+    <string name="dashboard_tool_purgelogs_name">Purge tombstones/logs (Shizuku/Root)</string>
     <string name="scheduler_notification_channel_label">Scheduler</string>
     <string name="scheduler_notification_title">Scheduled task</string>
     <string name="scheduler_notification_message">Executing: \"%s\"</string>

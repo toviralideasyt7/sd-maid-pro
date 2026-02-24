@@ -38,4 +38,8 @@ sealed interface DashboardEvents {
 
     data object SqueezerSetup : DashboardEvents
 
+    data class Message(
+        val text: String,
+    ) : DashboardEvents
+
 }

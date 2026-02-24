@@ -31,6 +31,7 @@ import eu.darken.sdmse.common.viewbinding.viewBinding
 import eu.darken.sdmse.databinding.DashboardFragmentBinding
 import eu.darken.sdmse.deduplicator.ui.PreviewDeletionDialog
 import eu.darken.sdmse.main.ui.settings.general.OneClickOptionsDialog
+import eu.darken.sdmse.scheduler.core.SchedulerMaintenanceTask
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -241,7 +242,29 @@ class DashboardFragment : Fragment3(R.layout.dashboard_fragment) {
                         .show()
                 }
 
-                is DashboardEvents.TaskResult -> {} // No snackbar, results shown on cards
+                is DashboardEvents.TaskResult -> {
+                    if (event.result is SchedulerMaintenanceTask.Result) {
+                        val result = event.result as SchedulerMaintenanceTask.Result
+                        val text = buildString {
+                            append(result.primaryInfo.get(requireContext()))
+                            result.secondaryInfo?.get(requireContext())?.takeIf { it.isNotBlank() }?.let {
+                                append("\n")
+                                append(it)
+                            }
+                        }
+                        Snackbar
+                            .make(requireView(), text, Snackbar.LENGTH_LONG)
+                            .setAnchorView(ui.mainAction)
+                            .show()
+                    }
+                }
+
+                is DashboardEvents.Message -> {
+                    Snackbar
+                        .make(requireView(), event.text, Snackbar.LENGTH_LONG)
+                        .setAnchorView(ui.mainAction)
+                        .show()
+                }
 
                 is DashboardEvents.TodoHint -> MaterialAlertDialogBuilder(requireContext()).apply {
                     setMessage(eu.darken.sdmse.common.R.string.general_todo_msg)

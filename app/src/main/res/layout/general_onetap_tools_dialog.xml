@@ -24,7 +24,35 @@
         style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/appcleaner_tool_name" />
+        android:text="@string/appcleaner_tool_name_advanced" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/killapps_toggle"
+        style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scheduler_tool_killapps_name" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/cachetrim_toggle"
+        style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scheduler_tool_cachetrim_name" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/vacuum_toggle"
+        style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dashboard_tool_vacuum_name" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/purgelogs_toggle"
+        style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dashboard_tool_purgelogs_name" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/deduplicator_toggle"

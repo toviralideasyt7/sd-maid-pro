@@ -23,6 +23,7 @@ import eu.darken.sdmse.deduplicator.core.tasks.DeduplicatorOneClickTask
 import eu.darken.sdmse.main.core.GeneralSettings
 import eu.darken.sdmse.main.core.taskmanager.TaskManager
 import eu.darken.sdmse.main.ui.MainActivity
+import eu.darken.sdmse.scheduler.core.MaintenanceOps
 import eu.darken.sdmse.systemcleaner.core.SystemCleaner
 import eu.darken.sdmse.systemcleaner.core.tasks.SystemCleanerOneClickTask
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,7 @@ class ShortcutActivity : ComponentActivity() {
     @Inject lateinit var systemCleaner: SystemCleaner
     @Inject lateinit var appCleaner: AppCleaner
     @Inject lateinit var deduplicator: Deduplicator
+    @Inject lateinit var maintenanceOps: MaintenanceOps
     @Inject lateinit var appScope: AppCoroutineScope
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,6 +120,29 @@ class ShortcutActivity : ComponentActivity() {
                 taskManager.submit(DeduplicatorOneClickTask())
             } catch (e: Exception) {
                 log(TAG) { "Failed to submit DeduplicatorOneClickTask: $e" }
+            }
+        }
+
+        val killApps = generalSettings.oneClickKillAppsEnabled.value()
+        val trimCaches = generalSettings.oneClickCacheTrimEnabled.value()
+        val vacuumApps = generalSettings.oneClickVacuumAppsEnabled.value()
+        val purgeLogs = generalSettings.oneClickPurgeLogsEnabled.value()
+        if (killApps || trimCaches || vacuumApps || purgeLogs) {
+            val execution = maintenanceOps.execute(
+                killAppsRequested = killApps,
+                trimCachesRequested = trimCaches,
+                vacuumAppsRequested = vacuumApps,
+                purgeSystemLogsRequested = purgeLogs,
+            )
+            execution.error?.let {
+                log(TAG, WARN) { "Failed to execute one-click maintenance: $it" }
+            } ?: log(TAG, INFO) {
+                "One-click maintenance completed: stopped=${execution.stoppedPackages.size}, " +
+                    "failed=${execution.failedPackages.size}, trimSucceeded=${execution.trimSucceeded}, " +
+                    "reclaimedMb=${execution.reclaimedMb}, " +
+                    "vacuumSuccess=${execution.vacuumSucceededPackages.size}, " +
+                    "vacuumFailed=${execution.vacuumFailedPackages.size}, " +
+                    "purgeLogsSucceeded=${execution.purgeLogsSucceeded}"
             }
         }
 
